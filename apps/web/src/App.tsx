@@ -1,10 +1,18 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Signup from './pages/Signup';
+import Login from './pages/Login';
 
 function App() {
     return (
-        <div className="App">
-            <Signup />
-        </div>
+        <Router>
+            <Routes>
+                {/* Default route: Sends them to login if they just type localhost:5173 */}
+                <Route path="/" element={<Navigate to="/login" />} />
+
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+            </Routes>
+        </Router>
     );
 }
 
