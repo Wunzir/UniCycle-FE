@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import WhiteNavbar from './components/navbar';
 
 // Import the DATA and the TYPE from your shared library
 // Notice the word 'type' before User
@@ -16,6 +17,7 @@ function App() {
 
     return (
         <div className="App">
+            <WhiteNavbar />
             <h1>UniCycle Web (TypeScript)</h1>
             <div className="card">
                 <h3>Shared Logic Test:</h3>
@@ -29,6 +31,7 @@ function App() {
             </div>
         </div>
     )
+    
 }
 
 export default App
