@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
+
 import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
     const navigate = useNavigate();
+
     const [loginData, setLoginData] = useState({
         email: '',
         password: ''
@@ -26,9 +29,9 @@ const Login = () => {
             alert("Please enter your password!");
             return;
         }
-
         // This is where Ajay's login API will eventually go. For now, we just navigate to the marketplace.
         navigate('/marketplace');
+
     };
 
     return (
