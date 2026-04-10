@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Marketplace from './pages/Marketplace';
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
 
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/marketplace" element={<Marketplace />} />
             </Routes>
         </Router>
     );
