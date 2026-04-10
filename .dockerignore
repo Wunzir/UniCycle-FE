@@ -1,0 +1,55 @@
+# ------------------------------------------------------------------------
+# Dependency Directories
+# ------------------------------------------------------------------------
+# We want to ignore node_modules because the container will install its own
+# dependencies based on the package.json and package-lock.json files.
+**/node_modules
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# ------------------------------------------------------------------------
+# Build Outputs
+# ------------------------------------------------------------------------
+# We want Docker to compile fresh. We don't want to accidentally
+# copy over an old local build from the host machine.
+**/dist
+**/build
+**/.next
+
+# ------------------------------------------------------------------------
+# Environment Variables & Secrets
+# ------------------------------------------------------------------------
+# NEVER copy local environment variables into a Docker image. They should be
+# passed in at runtime via docker-compose.yml or our hosting provider.
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# ------------------------------------------------------------------------
+# Git & IDE Files
+# ------------------------------------------------------------------------
+# These are useless inside the container and just take up space.
+.git
+.gitignore
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ------------------------------------------------------------------------
+# Docker Files
+# ------------------------------------------------------------------------
+# The container doesn't need to hold its own blueprints.
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# ------------------------------------------------------------------------
+# Markdown / Documentation
+# ------------------------------------------------------------------------
+README.md
