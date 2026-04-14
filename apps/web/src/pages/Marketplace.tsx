@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Mock Data
 const INITIAL_LISTINGS = [
@@ -12,6 +13,7 @@ const INITIAL_LISTINGS = [
 const CATEGORIES = ["All", "Books", "Furniture", "Electronics"];
 
 const Marketplace = () => {
+    const navigate = useNavigate();
     const [listings, setListings] = useState(INITIAL_LISTINGS); // Start to setting listing hope it works
     const [selectedCategory, setSelectedCategory] = useState("All");
     // Add the search bar stuff
@@ -90,7 +92,9 @@ const Marketplace = () => {
                 <div style={gridStyle}>
                     {filteredListings.map(item => (
 
-                        <div key={item.id} style={cardStyle}>
+                        <div key={item.id} style={cardStyle}
+                            onClick={() => navigate(`/listing/${item.id}`, { state: item })}
+                            >
                             <img src={item.image} alt={item.title} style={imageStyle} />
                             <div style={cardInfoStyle}>
                                 <h3 style={priceStyle}>${item.price}</h3>

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Marketplace from './pages/Marketplace';
+import ListingDetails from './pages/ListingDetails';
 
 function App() {
     return (
@@ -13,6 +14,8 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+
+                <Route path="/listing/:id" element={<ListingDetails />} />
             </Routes>
         </Router>
     );
