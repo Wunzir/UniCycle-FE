@@ -3,6 +3,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Marketplace from './pages/Marketplace';
 import ListingDetails from './pages/ListingDetails';
+import Profile from './pages/Profile';
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/profile" element={<Profile />} />
 
                 <Route path="/listing/:id" element={<ListingDetails />} />
             </Routes>
