@@ -1,37 +1,112 @@
-import { useState } from 'react'
-import './App.css'
-import WhiteNavbar from './components/navbar';
-
-// Import the DATA and the TYPE from your shared library
-// Notice the word 'type' before User
-import { SHARED_TEXT, type User } from '@unicycle/shared';
-
+import "./App.css";
+import Logo from "./assets/UniCycle.png";
 function App() {
-    // 1. Create a user object typed with the Interface from shared!
-    const currentUser: User = {
-        id: "101",
-        username: "rpi_student",
-        email: "student@rpi.edu",
-        role: "student" // Try changing this to "teacher" -> TS should error!
-    }
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f3f4f6",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          backgroundColor: "white",
+          padding: "32px",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <h1
+          style={{
+            textAlign: "center",
+            marginBottom: "24px",
+            fontSize: "28px",
+            fontWeight: "bold",
+          }}
+        >
+          Sign In
+        </h1>
+        <img src={Logo} alt = "logo" style={{ display: "block", margin: "0 auto",width: "200px" }} />
 
-    return (
-        <div className="App">
-            <WhiteNavbar />
-            <h1>UniCycle Web (TypeScript)</h1>
-            <div className="card">
-                <h3>Shared Logic Test:</h3>
-                <p style={{ color: 'green', fontWeight: 'bold' }}>
-                    {SHARED_TEXT}
-                </p>
+        <form>
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              htmlFor="email"
+              style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
 
-                <h3>Shared Type Test:</h3>
-                <p>User: {currentUser.username}</p>
-                <p>Role: {currentUser.role}</p>
-            </div>
-        </div>
-    )
-    
+          <div style={{ marginBottom: "20px" }}>
+            <label
+              htmlFor="password"
+              style={{ display: "block", marginBottom: "8px", fontWeight: 500 }}
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              style={{
+                width: "100%",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#dc2626",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            Sign In
+          </button>
+        </form>
+
+        <p
+          style={{
+            marginTop: "16px",
+            textAlign: "center",
+            color: "#666",
+            fontSize: "14px",
+          }}
+        >
+          Don&apos;t have an account? Sign up
+        </p>
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
