@@ -3,14 +3,58 @@ import { useNavigate } from 'react-router-dom';
 
 // Mock Data
 const INITIAL_LISTINGS = [
-    { id: 1, title: "Calculus Textbook", price: 40, category: "Books", image: "https://picsum.photos/seed/book/200/150" },
-    { id: 2, title: "Mini Fridge", price: 60, category: "Furniture", image: "https://picsum.photos/seed/fridge/200/150" },
-    { id: 3, title: "iPad Pro + Pencil", price: 450, category: "Electronics", image: "https://picsum.photos/seed/ipad/200/150" },
-    { id: 4, title: "Desk Lamp", price: 15, category: "Furniture", image: "https://picsum.photos/seed/lamp/200/150" },
-    { id: 5, title: "iClicker 2", price: 20, category: "Electronics", image: "https://picsum.photos/seed/tech/200/150" },
-    { id: 6, title: "Physics 101", price: 30, category: "Books", image: "https://picsum.photos/seed/physics/200/150" },
+    {
+        id: 1,
+        title: "Calculus Textbook (Like New)",
+        price: 40,
+        category: "Books",
+        image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80"
+    },
+
+    {
+        id: 2,
+        title: "Sony Noise Cancelling Headphones",
+        price: 120,
+        category: "Electronics",
+        image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        id: 3,
+        title: "Trek Commuter Bike",
+        price: 150,
+        category: "Transportation",
+        image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        id: 4,
+        title: "iPad Pro + Apple Pencil",
+        price: 450,
+        category: "Electronics",
+        image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        id: 5,
+        title: "Modern Desk Lamp",
+        price: 15,
+        category: "Furniture",
+        image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        id: 6,
+        title: "Mechanical Keyboard",
+        price: 65,
+        category: "Electronics",
+        image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+        id: 7,
+        title: "Ergonomic Office Chair",
+        price: 80,
+        category: "Furniture",
+        image: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&w=400&q=80"
+    },
 ];
-const CATEGORIES = ["All", "Books", "Furniture", "Electronics"];
+const CATEGORIES = ["All", "Books", "Furniture", "Electronics", "Clothing", "Transportation"];
 
 const Marketplace = () => {
     const navigate = useNavigate();
@@ -20,7 +64,9 @@ const Marketplace = () => {
     const [searchQuery, setSearchQuery] = useState("");
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newListing, setNewListing] = useState({ title: '', price: '', category: 'Books' });
+    const [newListing, setNewListing] = useState({ title: '', price: '', category: 'Books', description: '' });
+
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
     const filteredListings = listings.filter(item => {
         const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
@@ -28,23 +74,32 @@ const Marketplace = () => {
         return matchesCategory && matchesSearch;
     });
 
-    const handlePostListing = () => {
-        if (!newListing.title || !newListing.price) {
-            alert("Please fill out the title and price!");
-            return;
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Create a temporary local URL for the selected image
+            const tempUrl = URL.createObjectURL(file);
+            setUploadedImage(tempUrl);
         }
-        const itemToAdd = {
-            id: listings.length + 1, // Generate a fake ID
-            title: newListing.title,
-            price: Number(newListing.price), // Ensure price is a number
-            category: newListing.category,
-            // Generate a random picture based on the title they typed
-            image: `https://picsum.photos/seed/${newListing.title.replace(/\s/g, '')}/200/150`
-        };
-        setListings([itemToAdd, ...listings]);
+    };
+    const handlePostListing = () => {
+        if (!newListing.title || !newListing.price) return alert("Please fill out title and price!");
 
+        const itemToAdd = {
+            id: listings.length + 1,
+            title: newListing.title,
+            price: Number(newListing.price),
+            category: newListing.category,
+            description: newListing.description || "No description provided.",
+            image: uploadedImage || "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=400&q=80"
+        };
+
+        setListings([itemToAdd, ...listings]);
         setIsModalOpen(false);
-        setNewListing({ title: '', price: '', category: 'Books' });
+        setNewListing({ title: '', price: '', category: 'Books', description: '' });
+
+        // --- ADD THIS LINE to clear the image for the next post ---
+        setUploadedImage(null);
     };
 
     return (
@@ -129,7 +184,38 @@ const Marketplace = () => {
                                 style={modalInputStyle}
                                 placeholder="0.00"
                             />
+
                         </div>
+
+                        <div style={formGroupStyle}>
+                            <label>Description</label>
+                            <textarea
+                                value={newListing.description}
+                                onChange={e => setNewListing({...newListing, description: e.target.value})}
+                                style={{ ...modalInputStyle, height: '80px', resize: 'vertical', fontFamily: 'sans-serif' }}
+                                placeholder="Describe the condition, brand, reason for selling..."
+                            />
+                        </div>
+
+                        <div style={formGroupStyle}>
+                            <label>Upload Photo</label>
+                            <input
+                                type="file"
+                                accept="image/*" // Only allow image files
+                                onChange={handleImageUpload}
+                                style={{ padding: '5px 0' }}
+                            />
+                            {/* Show a mini preview if they uploaded something! */}
+                            {uploadedImage && (
+                                <img
+                                    src={uploadedImage}
+                                    alt="Preview"
+                                    style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '6px', marginTop: '10px' }}
+                                />
+                            )}
+                        </div>
+
+
 
                         <div style={formGroupStyle}>
                             <label>Category</label>
@@ -141,6 +227,8 @@ const Marketplace = () => {
                                 <option value="Books">Books</option>
                                 <option value="Furniture">Furniture</option>
                                 <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Transportation">Transportation</option>
                             </select>
                         </div>
 
