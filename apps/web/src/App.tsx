@@ -18,20 +18,29 @@ const defaultFilters: ListingFilters = {
 export default function App() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [filters, setFilters] = useState<ListingFilters>(defaultFilters);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
+
     if (filters.search) params.set("search", filters.search);
     if (filters.category !== "all") params.set("category", filters.category);
     if (filters.sort) params.set("sort", filters.sort);
+
     return params.toString();
   }, [filters]);
 
   useEffect(() => {
     const path = queryString ? `/listings?${queryString}` : "/listings";
+
+    setIsLoading(true);
+    setError("");
+
     fetchJson<ListingsResponse>(path)
       .then((res) => setListings(res.data ?? []))
-      .catch(console.error);
+      .catch(() => setError("Could not load listings."))
+      .finally(() => setIsLoading(false));
   }, [queryString]);
 
   return (
@@ -44,11 +53,19 @@ export default function App() {
       <FilterBar filters={filters} onChange={setFilters} />
 
       <section>
-        <div className="listing-grid">
-          {listings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </div>
+        {isLoading && <p>Loading listings...</p>}
+        {error && <p>{error}</p>}
+        {!isLoading && !error && listings.length === 0 && (
+          <p>No listings found.</p>
+        )}
+
+        {!isLoading && !error && listings.length > 0 && (
+          <div className="listing-grid">
+            {listings.map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
