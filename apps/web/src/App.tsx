@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Listing } from "@unicycle/shared";
+import { ListingCard } from "./components/ListingCard";
 import { fetchJson } from "./lib/api";
 
 type ListingsResponse = {
@@ -25,7 +25,11 @@ export default function App() {
 
       <section>
         <h2>Latest Listings</h2>
-        <p>{listings.length} items available</p>
+        <div className="listing-grid">
+          {listings.map((listing) => (
+            <ListingCard key={listing.id} listing={listing} />
+          ))}
+        </div>
       </section>
     </main>
   );
