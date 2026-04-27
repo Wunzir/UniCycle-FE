@@ -63,6 +63,7 @@ const Marketplace = () => {
                                 <li style={dropdownItemStyle} onClick={() => navigate('/profile')}>My Profile</li>
                                 <li style={dropdownItemStyle}>My Listings</li>
                                 <li style={dropdownItemStyle}>Settings</li>
+                                <li style={dropdownItemStyle} onClick={() => navigate('/help')}>Help Center</li>
                                 <hr style={{ margin: '5px 0', border: 'none', borderTop: '1px solid #eee' }} />
                                 <li style={{...dropdownItemStyle, color: '#dc3545'}} onClick={() => navigate('/login')}>Log Out</li>
                             </ul>

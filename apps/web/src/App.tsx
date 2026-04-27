@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Marketplace from './pages/Marketplace';
 import ListingDetails from './pages/ListingDetails';
 import Profile from './pages/Profile';
+import Help from './pages/Help';
 
 function App() {
     return (
@@ -16,7 +17,7 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/profile" element={<Profile />} />
-
+                    <Route path="/help" element={<Help />} />
                 <Route path="/listing/:id" element={<ListingDetails />} />
             </Routes>
         </Router>
