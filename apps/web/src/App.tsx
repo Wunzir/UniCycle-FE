@@ -1,34 +1,32 @@
-//import { useState } from 'react'
-import './App.css'
+import { useEffect, useState } from "react";
+import type { Listing } from "@unicycle/shared";
+import { fetchJson } from "./lib/api";
 
-// Import the DATA and the TYPE from your shared library
-// Notice the word 'type' before User
-import { SHARED_TEXT, type User } from '@unicycle/shared';
+type ListingsResponse = {
+  success: boolean;
+  data: Listing[];
+};
 
-function App() {
-    // 1. Create a user object typed with the Interface from shared!
-    const currentUser: User = {
-        id: "101",
-        username: "rpi_student",
-        email: "student@rpi.edu",
-        role: "student" // Try changing this to "teacher" -> TS should error!
-    }
+export default function App() {
+  const [listings, setListings] = useState<Listing[]>([]);
 
-    return (
-        <div className="App">
-            <h1>UniCycle Web (TypeScript)</h1>
-            <div className="card">
-                <h3>Shared Logic Test:</h3>
-                <p style={{ color: 'green', fontWeight: 'bold' }}>
-                    {SHARED_TEXT}
-                </p>
+  useEffect(() => {
+    fetchJson<ListingsResponse>("/listings")
+      .then((res) => setListings(res.data ?? []))
+      .catch(console.error);
+  }, []);
 
-                <h3>Shared Type Test:</h3>
-                <p>User: {currentUser.username}</p>
-                <p>Role: {currentUser.role}</p>
-            </div>
-        </div>
-    )
+  return (
+    <main>
+      <section>
+        <h1>UniCycle Marketplace</h1>
+        <p>Buy and sell student essentials.</p>
+      </section>
+
+      <section>
+        <h2>Latest Listings</h2>
+        <p>{listings.length} items available</p>
+      </section>
+    </main>
+  );
 }
-
-export default App
