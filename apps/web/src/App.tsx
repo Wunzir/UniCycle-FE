@@ -1,20 +1,38 @@
-import { useEffect, useState } from "react";
-import { ListingCard } from "./components/ListingCard";
+import { useEffect, useMemo, useState } from "react";
+import type { Listing, ListingFilters } from "@unicycle/shared";
 import { fetchJson } from "./lib/api";
+import { FilterBar } from "./components/FilterBar";
+import { ListingCard } from "./components/ListingCard";
 
 type ListingsResponse = {
   success: boolean;
   data: Listing[];
 };
 
+const defaultFilters: ListingFilters = {
+  search: "",
+  category: "all",
+  sort: "recent",
+};
+
 export default function App() {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [filters, setFilters] = useState<ListingFilters>(defaultFilters);
+
+  const queryString = useMemo(() => {
+    const params = new URLSearchParams();
+    if (filters.search) params.set("search", filters.search);
+    if (filters.category !== "all") params.set("category", filters.category);
+    if (filters.sort) params.set("sort", filters.sort);
+    return params.toString();
+  }, [filters]);
 
   useEffect(() => {
-    fetchJson<ListingsResponse>("/listings")
+    const path = queryString ? `/listings?${queryString}` : "/listings";
+    fetchJson<ListingsResponse>(path)
       .then((res) => setListings(res.data ?? []))
       .catch(console.error);
-  }, []);
+  }, [queryString]);
 
   return (
     <main>
@@ -23,8 +41,9 @@ export default function App() {
         <p>Buy and sell student essentials.</p>
       </section>
 
+      <FilterBar filters={filters} onChange={setFilters} />
+
       <section>
-        <h2>Latest Listings</h2>
         <div className="listing-grid">
           {listings.map((listing) => (
             <ListingCard key={listing.id} listing={listing} />
