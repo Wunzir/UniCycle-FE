@@ -15,3 +15,4 @@ export function ListingCard({ listing }: Props) {
     </article>
   );
 }
+
