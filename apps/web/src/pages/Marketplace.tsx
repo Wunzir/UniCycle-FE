@@ -24,16 +24,26 @@ const Marketplace = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [notifyToggled, setNotifyToggled] = useState(false);
+    const [likedItems, setLikedItems] = useState<number[]>([]);
+    const [showOnlyLiked, setShowOnlyLiked] = useState(false);
 
     const [newListing, setNewListing] = useState({ title: '', price: '', category: 'Books', description: '' });
 
-    // --- LOGIC ---
+    // Logic code goes below
     const filteredListings = listings.filter(item => {
         const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
         const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
+        const matchesLiked = showOnlyLiked ? likedItems.includes(item.id) : true;
+        return matchesCategory && matchesSearch && matchesLiked;
     });
-
+    const toggleLike = (e: React.MouseEvent, id: number) => {
+        e.stopPropagation(); // Stops the card click event from firing
+        if (likedItems.includes(id)) {
+            setLikedItems(likedItems.filter(itemId => itemId !== id));
+        } else {
+            setLikedItems([...likedItems, id]);
+        }
+    };
     const handlePostListing = () => {
         if (!newListing.title || !newListing.price) return alert("Please fill out title and price!");
         const itemToAdd = {
@@ -77,6 +87,15 @@ const Marketplace = () => {
 
                 {/* Categories code */}
                 <aside style={sidebarStyle}>
+                    <div
+                        style={{ ...wishlistToggleStyle, backgroundColor: showOnlyLiked ? '#fff0f3' : 'transparent', color: showOnlyLiked ? '#e63946' : '#333' }}
+                        onClick={() => setShowOnlyLiked(!showOnlyLiked)}
+                    >
+                        <span style={{ fontSize: '1.2rem' }}>{showOnlyLiked ? '❤️' : '🤍'}</span>
+                        <span style={{ fontWeight: 'bold' }}>My Wishlist</span>
+                    </div>
+
+                    <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
                     <h2 style={{ color: '#007bff', marginBottom: '20px' }}>Categories</h2>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                         {CATEGORIES.map(category => (
@@ -117,7 +136,7 @@ const Marketplace = () => {
                         </button>
                     </div>
 
-                    {/* --- GRID OR EMPTY STATE --- */}
+                    {/* no listings adjust query*/}
                     {filteredListings.length === 0 ? (
                         <div style={emptyStateStyle}>
                             <div style={emptyIconStyle}>🔍</div>
@@ -136,7 +155,13 @@ const Marketplace = () => {
                     ) : (
                         <div style={gridStyle}>
                             {filteredListings.map(item => (
-                                <div key={item.id} style={cardStyle} onClick={() => navigate(`/listing/${item.id}`, { state: item })}>
+                                <div key={item.id} style={{ ...cardStyle, position: 'relative' }} onClick={() => navigate(`/listing/${item.id}`, { state: item })}>
+                                    <div
+                                        style={heartIconStyle}
+                                        onClick={(e) => toggleLike(e, item.id)}
+                                    >
+                                        {likedItems.includes(item.id) ? '❤️' : '🤍'}
+                                    </div>
                                     <img src={item.image} alt={item.title} style={imageStyle} />
                                     <div style={cardInfoStyle}>
                                         <h3 style={priceStyle}>${item.price.toFixed(2)}</h3>
@@ -239,6 +264,9 @@ const notifyTextStyle: React.CSSProperties = { margin: '0 0 15px 0', fontWeight:
 const notifyButtonStyle: React.CSSProperties = { width: '100%', padding: '14px', backgroundColor: 'white', border: '2px solid #007bff', color: '#007bff', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' };
 const notifyButtonActiveStyle: React.CSSProperties = { width: '100%', padding: '14px', backgroundColor: '#007bff', border: '2px solid #007bff', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' };
 
+// Liked Styles when you like something
+const wishlistToggleStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 15px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid #ddd' };
+const heartIconStyle: React.CSSProperties = { position: 'absolute', top: '10px', right: '10px', backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', fontSize: '1.1rem', zIndex: 10, transition: 'transform 0.1s' };
 // more modal styles
 const modalOverlayStyle: React.CSSProperties = { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 };
 const modalContentStyle: React.CSSProperties = { backgroundColor: 'white', padding: '30px', borderRadius: '12px', width: '100%', maxWidth: '450px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' };
