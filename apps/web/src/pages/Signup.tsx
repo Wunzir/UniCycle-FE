@@ -85,6 +85,19 @@ const Signup = () => {
                     >
                         Next
                     </button>
+                    <div style={{ marginTop: '25px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
+                            Already have an account?
+                        </p>
+
+                        <button
+                            type="button" // Very important: prevents the button from accidentally submitting the form
+                            onClick={() => navigate('/login')}
+                            style={blueLoginButtonStyle}
+                        >
+                            Log In to UniCycle
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,6 +114,18 @@ const subTextStyle: React.CSSProperties = { color: '#666', marginBottom: '30px',
 const formStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '20px' };
 const inputStyle: React.CSSProperties = { padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem', width: '100%', boxSizing: 'border-box' };
 const buttonStyle: React.CSSProperties = { padding: '15px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', transition: 'background-color 0.3s' };
-
+const blueLoginButtonStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '12px',
+    backgroundColor: '#e6f2ff', // A soft, light blue background
+    color: '#007bff',           // The UniCycle deep blue text
+    border: '2px solid #007bff', // Solid blue outline
+    borderRadius: '8px',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    outline: 'none'
+};
 
 export default Signup;

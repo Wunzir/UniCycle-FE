@@ -70,7 +70,13 @@ const Login = () => {
                     </button>
 
                     <p style={{ marginTop: '20px', fontSize: '0.9rem', color: '#666' }}>
-                        Don't have an account? <span style={{ color: '#007bff', cursor: 'pointer', fontWeight: 'bold' }}>Sign Up</span>
+                        Don't have an account?{''}
+                        <span
+                            style={{ color: '#007bff', fontWeight: 'bold', cursor: 'pointer' }}
+                            onClick={() => navigate('/signup')}
+                            >
+                                Sign up!
+                        </span>
                     </p>
                 </div>
             </div>
