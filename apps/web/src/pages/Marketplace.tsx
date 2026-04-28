@@ -26,6 +26,18 @@ const Marketplace = () => {
     const [notifyToggled, setNotifyToggled] = useState(false);
     const [likedItems, setLikedItems] = useState<number[]>([]);
     const [showOnlyLiked, setShowOnlyLiked] = useState(false);
+    const QUICK_REPLIES = [
+        "Is this still available?",
+        "Are you open to negotiating?",
+        "Can we meet on campus today to discuss further?",
+        "What's the lowest you would take?",
+        "What days and times are you willing to meet?"
+    ];
+    const [messageModal, setMessageModal] = useState<{isOpen: boolean, item: any, text: string}>({
+        isOpen: false,
+        item: null,
+        text: ''
+    });
 
     const [newListing, setNewListing] = useState({ title: '', price: '', category: 'Books', description: '' });
 
@@ -211,7 +223,25 @@ const Marketplace = () => {
                                         </h3>
 
                                         <p style={titleStyle}>{item.title}</p>
-                                        <span style={badgeStyle}>{item.category}</span>
+
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px' }}>
+                                            <span style={badgeStyle}>{item.category}</span>
+
+                                            {/* Only show message button if the item isn't sold */}
+                                            {item.status !== 'sold' && (
+                                                <button
+                                                    style={cardMessageButtonStyle}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation(); // Prevents the card click from firing
+                                                        setMessageModal({ isOpen: true, item: item, text: '' });
+                                                    }}
+                                                >
+                                                    💬 Message
+                                                </button>
+                                            )}
+                                        </div>
+
                                     </div>
                                 </div>
                             ))}
@@ -260,6 +290,57 @@ const Marketplace = () => {
                         <div style={modalActionStyle}>
                             <button onClick={() => setIsModalOpen(false)} style={cancelButtonStyle}>Cancel</button>
                             <button onClick={handlePostListing} style={postButtonStyle}>Post Listing</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {messageModal.isOpen && messageModal.item && (
+                <div style={modalOverlayStyle}>
+                    <div style={modalContentStyle}>
+                        <h2 style={{marginTop: 0, marginBottom: '5px'}}>Message Seller</h2>
+                        <p style={{ margin: '0 0 20px 0', color: '#666', fontSize: '0.9rem' }}>
+                            Regarding: <strong>{messageModal.item.title}</strong>
+                        </p>
+
+                        <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#444' }}>Quick Replies</label>
+                        <div style={quickReplyContainerStyle}>
+                            {QUICK_REPLIES.map(reply => (
+                                <button
+                                    key={reply}
+                                    onClick={() => setMessageModal({ ...messageModal, text: reply })}
+                                    style={chipStyle}
+                                >
+                                    {reply}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div style={formGroupStyle}>
+                            <textarea
+                                value={messageModal.text}
+                                onChange={e => setMessageModal({ ...messageModal, text: e.target.value })}
+                                style={{ ...modalInputStyle, height: '100px', resize: 'none', fontFamily: 'sans-serif' }}
+                                placeholder="Type your message here..."
+                            />
+                        </div>
+
+                        <div style={modalActionStyle}>
+                            <button
+                                onClick={() => setMessageModal({ isOpen: false, item: null, text: '' })}
+                                style={cancelButtonStyle}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (!messageModal.text) return alert("Please enter a message!");
+                                    alert("Message Sent securely via UniCycle!");
+                                    setMessageModal({ isOpen: false, item: null, text: '' });
+                                }}
+                                style={postButtonStyle}
+                            >
+                                Send Message
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -332,4 +413,9 @@ const newBadgeStyle: React.CSSProperties = { position: 'absolute', top: '12px', 
 const oldPriceStyle: React.CSSProperties = { fontSize: '0.9rem', color: '#999', textDecoration: 'line-through', marginLeft: '8px', fontWeight: 'normal' };
 const priceDropStyle: React.CSSProperties = { fontSize: '0.75rem', color: '#dc3545', backgroundColor: '#ffe5e5', padding: '3px 6px', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle', fontWeight: 'bold' };
 const priceIncreaseStyle: React.CSSProperties = { fontSize: '0.75rem', color: '#d97706', backgroundColor: '#fef3c7', padding: '3px 6px', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle', fontWeight: 'bold' };
+
+// This is for the quick replies and quick messages
+const cardMessageButtonStyle: React.CSSProperties = { padding: '6px 12px', backgroundColor: '#eef2f6', color: '#007bff', border: 'none', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background-color 0.2s' };
+const quickReplyContainerStyle: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '8px', margin: '10px 0 20px 0' };
+const chipStyle: React.CSSProperties = { padding: '8px 14px', backgroundColor: '#f0f2f5', border: '1px solid #dcdde1', borderRadius: '20px', fontSize: '0.85rem', color: '#333', cursor: 'pointer', transition: 'all 0.2s', outline: 'none' };
 export default Marketplace;
