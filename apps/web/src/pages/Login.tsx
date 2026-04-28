@@ -19,7 +19,7 @@ const Login = () => {
         const { name, value } = e.target;
         setLoginData((prev) => ({ ...prev, [name]: value }));
     };
-
+    const [showPassword, setShowPassword] = useState(false);
     const handleLogin = () => {
         if (!loginData.email.includes('@')) {
             alert("Please enter a valid email!");
@@ -49,14 +49,28 @@ const Login = () => {
                         value={loginData.email}
                         onChange={handleChange}
                     />
-                    <input
-                        name="password"
-                        type="password"
-                        placeholder="Password"
-                        style={inputStyle}
-                        value={loginData.password}
-                        onChange={handleChange}
-                    />
+                    <div style={passwordWrapperStyle}>
+                        <input
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            style={{...inputStyle, paddingRight: '40px'}}
+                            value={loginData.password}
+                            onChange={handleChange}
+                        />
+                        <button
+                            type="button"
+                            onMouseDown={() => setShowPassword(true)}
+                            onMouseUp={() => setShowPassword(false)}
+                            onMouseLeave={() => setShowPassword(false)}
+                            onTouchStart={() => setShowPassword(true)}
+                            onTouchEnd={() => setShowPassword(false)}
+                            style={eyeButtonStyle}
+                            title="Hold to show password"
+                        >
+                            {showPassword ? '👁️' : '👁️‍🗨️'}
+                        </button>
+                    </div>
 
                     <button
                         onClick={handleLogin}
@@ -92,5 +106,6 @@ const subTextStyle: React.CSSProperties = { color: '#666', marginBottom: '30px',
 const formStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '20px' };
 const inputStyle: React.CSSProperties = { padding: '14px', borderRadius: '6px', border: '1px solid #ddd', fontSize: '1rem', width: '100%', boxSizing: 'border-box' };
 const buttonStyle: React.CSSProperties = { padding: '15px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '1.1rem', fontWeight: 'bold', transition: 'background-color 0.3s' };
-
+const passwordWrapperStyle: React.CSSProperties = { position: 'relative', display: 'flex', alignItems: 'center', width: '100%' };
+const eyeButtonStyle: React.CSSProperties = { position: 'absolute', right: '10px', background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', userSelect: 'none', padding: '5px' };
 export default Login;
