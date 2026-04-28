@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 const CATEGORIES = ["All", "Books", "Furniture", "Electronics", "Clothing", "Transportation"];
 
 const INITIAL_LISTINGS = [
-    { id: 1, title: "Calculus Textbook (Like New)", price: 40, category: "Books", description: "Hardcover. No highlights or missing pages.", image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80" },
-    { id: 2, title: "Vintage Denim Jacket", price: 35, category: "Clothing", description: "Size Medium. Great condition.", image: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=400&q=80" },
-    { id: 3, title: "Sony Noise Cancelling Headphones", price: 120, category: "Electronics", description: "Used for one semester. Comes with case.", image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=400&q=80" },
-    { id: 4, title: "Trek Commuter Bike", price: 150, category: "Transportation", description: "Recently tuned up. Includes U-Lock.", image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80" },
-    { id: 5, title: "iPad Pro + Apple Pencil", price: 450, category: "Electronics", description: "128GB. Perfect for taking notes.", image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=400&q=80" },
-    { id: 6, title: "Modern Desk Lamp", price: 15, category: "Furniture", description: "Includes LED bulb.", image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=400&q=80" },
-    { id: 7, title: "Mechanical Keyboard", price: 65, category: "Electronics", description: "Cherry MX Red switches.", image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=400&q=80" },
-    { id: 8, title: "Ergonomic Office Chair", price: 80, category: "Furniture", description: "Super comfortable for long coding sessions.", image: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&w=400&q=80" },
+    { id: 1, title: "Calculus Textbook (Like New)", price: 40, category: "Books", description: "Hardcover. No highlights or missing pages.", status: "available", views: 42, chats: 3, image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80" },
+    { id: 2, title: "Vintage Denim Jacket", price: 35, category: "Clothing", description: "Size Medium. Great condition.", status: "pending", views: 108, chats: 7, image: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=400&q=80" },
+    { id: 3, title: "Sony Noise Cancelling Headphones", price: 120, category: "Electronics", description: "Used for one semester. Comes with case.", status: "available", views: 15, chats: 0, image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=400&q=80" },
+    { id: 4, title: "Trek Commuter Bike", price: 150, category: "Transportation", description: "Recently tuned up. Includes U-Lock.", status: "available", views: 89, chats: 4, image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80" },
+    { id: 5, title: "iPad Pro + Apple Pencil", price: 450, category: "Electronics", description: "128GB. Perfect for taking notes.", status: "available", views: 210, chats: 12, image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=400&q=80" },
+    { id: 6, title: "Modern Desk Lamp", price: 15, category: "Furniture", description: "Includes LED bulb.", status: "sold", views: 34, chats: 2, image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=400&q=80" },
+    { id: 7, title: "Mechanical Keyboard", price: 65, category: "Electronics", description: "Cherry MX Red switches.", status: "available", views: 56, chats: 1, image: "https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=400&q=80" },
+    { id: 8, title: "Ergonomic Office Chair", price: 80, category: "Furniture", description: "Super comfortable for long coding sessions.", status: "available", views: 12, chats: 0, image: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&w=400&q=80" },
 ];
 
 const Marketplace = () => {
@@ -52,6 +52,9 @@ const Marketplace = () => {
             price: Number(newListing.price),
             category: newListing.category,
             description: newListing.description || "No description provided.",
+            status: "available",
+            views: 0,
+            chats: 0,
             image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=400&q=80"
         };
         setListings([itemToAdd, ...listings]);
@@ -155,14 +158,36 @@ const Marketplace = () => {
                     ) : (
                         <div style={gridStyle}>
                             {filteredListings.map(item => (
-                                <div key={item.id} style={{ ...cardStyle, position: 'relative' }} onClick={() => navigate(`/listing/${item.id}`, { state: item })}>
-                                    <div
-                                        style={heartIconStyle}
-                                        onClick={(e) => toggleLike(e, item.id)}
-                                    >
+                                // 1. If it's sold, we lower the opacity to make it look inactive
+                                <div key={item.id} style={{ ...cardStyle, position: 'relative', opacity: item.status === 'sold' ? 0.6 : 1 }} onClick={() => navigate(`/listing/${item.id}`, { state: item })}>
+
+                                    {/* The Floating Heart (Wishlist) */}
+                                    <div style={heartIconStyle} onClick={(e) => toggleLike(e, item.id)}>
                                         {likedItems.includes(item.id) ? '❤️' : '🤍'}
                                     </div>
-                                    <img src={item.image} alt={item.title} style={imageStyle} />
+
+                                    {/* --- 2. THE STATUS BANNERS --- */}
+                                    {item.status === 'pending' && <div style={pendingBadgeStyle}>Pending Meetup</div>}
+                                    {item.status === 'sold' && <div style={soldOverlayStyle}>SOLD</div>}
+
+                                    {/* Image Wrapper */}
+                                    <div style={{ position: 'relative' }}>
+                                        <img src={item.image} alt={item.title} style={imageStyle} />
+
+                                        {/* --- 3. THE ACTIVITY STATS --- */}
+                                        <div style={statsOverlayStyle}>
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                👁️ {item.views}
+                                            </span>
+                                            {item.chats > 0 && (
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ffeb3b' }}>
+                                                    💬 {item.chats} active
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Card Info */}
                                     <div style={cardInfoStyle}>
                                         <h3 style={priceStyle}>${item.price.toFixed(2)}</h3>
                                         <p style={titleStyle}>{item.title}</p>
@@ -277,4 +302,8 @@ const modalActionStyle: React.CSSProperties = { display: 'flex', justifyContent:
 const cancelButtonStyle: React.CSSProperties = { padding: '10px 15px', backgroundColor: '#f8f9fa', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: '#555' };
 const postButtonStyle: React.CSSProperties = { padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' };
 
+// The fear of missing out styles
+const pendingBadgeStyle: React.CSSProperties = { position: 'absolute', top: '15px', left: '-5px', backgroundColor: '#ffc107', color: '#000', padding: '5px 15px', fontWeight: 'bold', fontSize: '0.85rem', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', zIndex: 10, borderRadius: '0 4px 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' };
+const soldOverlayStyle: React.CSSProperties = { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255,255,255,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5rem', fontWeight: '900', color: '#dc3545', zIndex: 20, pointerEvents: 'none', textShadow: '2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white' };
+const statsOverlayStyle: React.CSSProperties = { position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px 10px', display: 'flex', justifyContent: 'space-between', boxSizing: 'border-box', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', color: 'white', fontSize: '0.8rem', fontWeight: 'bold' };
 export default Marketplace;
