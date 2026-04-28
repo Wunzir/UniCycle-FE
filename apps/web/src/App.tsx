@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Listing, ListingFilters } from "@unicycle/shared";
-import { fetchJson } from "./lib/api";
 import { FilterBar } from "./components/FilterBar";
 import { ListingCard } from "./components/ListingCard";
+import { fetchJson } from "./lib/api";
 
 type ListingsResponse = {
   success: boolean;
@@ -20,6 +20,7 @@ export default function App() {
   const [filters, setFilters] = useState<ListingFilters>(defaultFilters);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [savedIds, setSavedIds] = useState<string[]>([]);
 
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
@@ -43,6 +44,12 @@ export default function App() {
       .finally(() => setIsLoading(false));
   }, [queryString]);
 
+  function handleToggleSave(id: string) {
+    setSavedIds((prev) =>
+      prev.includes(id) ? prev.filter((savedId) => savedId !== id) : [...prev, id]
+    );
+  }
+
   return (
     <main>
       <section>
@@ -62,7 +69,12 @@ export default function App() {
         {!isLoading && !error && listings.length > 0 && (
           <div className="listing-grid">
             {listings.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                saved={savedIds.includes(String(listing.id))}
+                onToggleSave={handleToggleSave}
+              />
             ))}
           </div>
         )}
