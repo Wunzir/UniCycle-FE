@@ -22,9 +22,19 @@ export function ListingCard({
         </button>
       </div>
 
+      {listing.featured && (
+        <span className="listing-badge listing-badge--featured">
+          Featured
+        </span>
+      )}
+
       <p>{listing.description}</p>
-      <strong>${listing.price}</strong>
-      <div>{listing.category}</div>
+
+      <div className="listing-card__meta">
+        <strong>${listing.price}</strong>
+        <span>{listing.category}</span>
+        <span>{listing.condition}</span>
+      </div>
     </article>
   );
 }

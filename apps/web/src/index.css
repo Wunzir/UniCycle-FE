@@ -80,3 +80,25 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+.listing-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+.listing-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.listing-badge--featured {
+  background: #e0f2fe;
+  color: #0369a1;
+}
