@@ -5,6 +5,12 @@ type Props = {
   onChange: (filters: ListingFilters) => void;
 };
 
+const defaultFilters: ListingFilters = {
+  search: "",
+  category: "all",
+  sort: "recent",
+};
+
 export function FilterBar({ filters, onChange }: Props) {
   return (
     <section className="filter-bar">
@@ -17,7 +23,10 @@ export function FilterBar({ filters, onChange }: Props) {
       <select
         value={filters.category}
         onChange={(e) =>
-          onChange({ ...filters, category: e.target.value as ListingFilters["category"] })
+          onChange({
+            ...filters,
+            category: e.target.value as ListingFilters["category"],
+          })
         }
       >
         <option value="all">All categories</option>
@@ -31,13 +40,24 @@ export function FilterBar({ filters, onChange }: Props) {
       <select
         value={filters.sort}
         onChange={(e) =>
-          onChange({ ...filters, sort: e.target.value as ListingFilters["sort"] })
+          onChange({
+            ...filters,
+            sort: e.target.value as ListingFilters["sort"],
+          })
         }
       >
         <option value="recent">Most recent</option>
         <option value="price_asc">Price: Low to high</option>
         <option value="price_desc">Price: High to low</option>
       </select>
+
+      <button
+        type="button"
+        className="filter-reset-button"
+        onClick={() => onChange(defaultFilters)}
+      >
+        Clear Filters
+      </button>
     </section>
   );
 }

@@ -4,6 +4,7 @@ import { FilterBar } from "./components/FilterBar";
 import { ListingCard } from "./components/ListingCard";
 import { fetchJson } from "./lib/api";
 import { MarketplaceStats } from "./components/MarketplaceStats";
+import { SectionHeader } from "./components/SectionHeader";
 
 type ListingsResponse = {
   success: boolean;
