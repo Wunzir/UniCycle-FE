@@ -1,34 +1,27 @@
-//import { useState } from 'react'
-import './App.css'
-
-// Import the DATA and the TYPE from your shared library
-// Notice the word 'type' before User
-import { SHARED_TEXT, type User } from '@unicycle/shared';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import Marketplace from './pages/Marketplace';
+import ListingDetails from './pages/ListingDetails';
+import Profile from './pages/Profile';
+import Help from './pages/Help';
 
 function App() {
-    // 1. Create a user object typed with the Interface from shared!
-    const currentUser: User = {
-        id: "101",
-        username: "rpi_student",
-        email: "student@rpi.edu",
-        role: "student" // Try changing this to "teacher" -> TS should error!
-    }
-
     return (
-        <div className="App">
-            <h1>UniCycle Web (TypeScript)</h1>
-            <div className="card">
-                <h3>Shared Logic Test:</h3>
-                <p style={{ color: 'green', fontWeight: 'bold' }}>
-                    {SHARED_TEXT}
-                </p>
+        <Router>
+            <Routes>
+                {/* Default route: Sends them to login if they just type localhost:5173 */}
+                <Route path="/" element={<Navigate to="/login" />} />
 
-                <h3>Shared Type Test:</h3>
-                <p>User: {currentUser.username}</p>
-                <p>Role: {currentUser.role}</p>
-            </div>
-        </div>
-    )
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/profile" element={<Profile />} />
+                    <Route path="/help" element={<Help />} />
+                <Route path="/listing/:id" element={<ListingDetails />} />
+            </Routes>
+        </Router>
+    );
 }
 
-export default App
+export default App;
