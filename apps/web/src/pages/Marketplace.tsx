@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 const CATEGORIES = ["All", "Books", "Furniture", "Electronics", "Clothing", "Transportation"];
 
+// Some temporary quick replies that can be improved at later dates
+const QUICK_REPLIES = [
+    "Is this still available?",
+    "Are you open to negotiating?",
+    "Can we meet on campus today to discuss further?",
+    "What's the lowest you would take?",
+    "What days and times are you willing to meet?"
+];
+ // The demo listings to show how things will work in the future but for now these are not real numbers just made up
 const INITIAL_LISTINGS = [
     { id: 1, title: "Calculus Textbook (Like New)", price: 40, originalPrice: null, isNew: true, category: "Books", description: "Hardcover. No highlights or missing pages.", status: "available", views: 42, chats: 3, image: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80" },
     { id: 2, title: "Vintage Denim Jacket", price: 35, originalPrice: 50, isNew: false, category: "Clothing", description: "Size Medium. Great condition.", status: "pending", views: 108, chats: 7, image: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=400&q=80" },
@@ -17,7 +26,7 @@ const INITIAL_LISTINGS = [
 const Marketplace = () => {
     const navigate = useNavigate();
 
-    // states that its in
+    // states that marketplace goes through when clicking around
     const [listings, setListings] = useState(INITIAL_LISTINGS);
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [searchQuery, setSearchQuery] = useState("");
@@ -26,13 +35,8 @@ const Marketplace = () => {
     const [notifyToggled, setNotifyToggled] = useState(false);
     const [likedItems, setLikedItems] = useState<number[]>([]);
     const [showOnlyLiked, setShowOnlyLiked] = useState(false);
-    const QUICK_REPLIES = [
-        "Is this still available?",
-        "Are you open to negotiating?",
-        "Can we meet on campus today to discuss further?",
-        "What's the lowest you would take?",
-        "What days and times are you willing to meet?"
-    ];
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
     const [messageModal, setMessageModal] = useState<{isOpen: boolean, item: any, text: string}>({
         isOpen: false,
         item: null,
@@ -41,21 +45,23 @@ const Marketplace = () => {
 
     const [newListing, setNewListing] = useState({ title: '', price: '', category: 'Books', description: '' });
 
-    // Logic code goes below
+    // Logic for categories
     const filteredListings = listings.filter(item => {
         const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
         const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesLiked = showOnlyLiked ? likedItems.includes(item.id) : true;
         return matchesCategory && matchesSearch && matchesLiked;
     });
+
     const toggleLike = (e: React.MouseEvent, id: number) => {
-        e.stopPropagation(); // Stops the card click event from firing
+        e.stopPropagation();
         if (likedItems.includes(id)) {
             setLikedItems(likedItems.filter(itemId => itemId !== id));
         } else {
             setLikedItems([...likedItems, id]);
         }
     };
+
     const handlePostListing = () => {
         if (!newListing.title || !newListing.price) return alert("Please fill out title and price!");
         const itemToAdd = {
@@ -76,43 +82,65 @@ const Marketplace = () => {
         setNewListing({ title: '', price: '', category: 'Books', description: '' });
     };
 
-    return (
-        <div style={pageLayout}>
+    // colors
+    const theme = {
+        bgMain: isDarkMode ? '#18191a' : '#f0f2f5',
+        bgSurface: isDarkMode ? '#242526' : 'white',
+        textMain: isDarkMode ? '#e4e6eb' : '#333',
+        textSub: isDarkMode ? '#b0b3b8' : '#666',
+        border: isDarkMode ? '#3e4042' : '#ddd',
+        inputBg: isDarkMode ? '#3a3b3c' : 'white',
+        hoverLight: isDarkMode ? '#3a3b3c' : '#f8f9fa'
+    };
 
-            {/* Search bar and its code */}
-            <header style={topBarStyle}>
+    return (
+        <div style={{ ...pageLayout, backgroundColor: theme.bgMain, color: theme.textMain, transition: 'all 0.3s ease' }}>
+
+            {/* navigation and unicycle writing */}
+            <header style={{ ...topBarStyle, backgroundColor: theme.bgSurface, borderBottom: `1px solid ${theme.border}` }}>
                 <h1 style={navLogoStyle}>UniCycle</h1>
-                <div style={profileContainerStyle}>
-                    <div style={profileCircleStyle} onClick={() => setIsProfileOpen(!isProfileOpen)}>DR</div>
-                    {isProfileOpen && (
-                        <div style={dropdownStyle}>
-                            <ul style={dropdownListStyle}>
-                                <li style={dropdownItemStyle} onClick={() => navigate('/profile')}>My Profile</li>
-                                <li style={dropdownItemStyle}>My Listings</li>
-                                <li style={dropdownItemStyle}>Settings</li>
-                                <li style={dropdownItemStyle} onClick={() => navigate('/help')}>Help Center</li>
-                                <hr style={{ margin: '5px 0', border: 'none', borderTop: '1px solid #eee' }} />
-                                <li style={{...dropdownItemStyle, color: '#dc3545'}} onClick={() => navigate('/login')}>Log Out</li>
-                            </ul>
-                        </div>
-                    )}
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    {/* Dark mode code using the moon, light mode sun*/}
+                    <button
+                        onClick={() => setIsDarkMode(!isDarkMode)}
+                        style={themeToggleStyle}
+                        title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    >
+                        {isDarkMode ? '☀️' : '🌙'}
+                    </button>
+
+                    <div style={profileContainerStyle}>
+                        <div style={profileCircleStyle} onClick={() => setIsProfileOpen(!isProfileOpen)}>DR</div>
+                        {isProfileOpen && (
+                            <div style={{ ...dropdownStyle, backgroundColor: theme.bgSurface, border: `1px solid ${theme.border}` }}>
+                                <ul style={dropdownListStyle}>
+                                    <li style={{ ...dropdownItemStyle, color: theme.textMain }} onClick={() => navigate('/profile')}>My Profile</li>
+                                    <li style={{ ...dropdownItemStyle, color: theme.textMain }} onClick={() => navigate('/my-listings')}>My Listings</li>
+                                    <li style={{ ...dropdownItemStyle, color: theme.textMain }}>Settings</li>
+                                    <li style={{ ...dropdownItemStyle, color: theme.textMain }} onClick={() => navigate('/help')}>Help Center</li>
+                                    <hr style={{ margin: '5px 0', border: 'none', borderTop: `1px solid ${theme.border}` }} />
+                                    <li style={{...dropdownItemStyle, color: '#dc3545'}} onClick={() => navigate('/login')}>Log Out</li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </header>
 
-
             <div style={contentWrapperStyle}>
 
-                {/* Categories code */}
-                <aside style={sidebarStyle}>
+                {/* category code*/}
+                <aside style={{ ...sidebarStyle, backgroundColor: theme.bgSurface, borderRight: `1px solid ${theme.border}` }}>
                     <div
-                        style={{ ...wishlistToggleStyle, backgroundColor: showOnlyLiked ? '#fff0f3' : 'transparent', color: showOnlyLiked ? '#e63946' : '#333' }}
+                        style={{ ...wishlistToggleStyle, backgroundColor: showOnlyLiked ? (isDarkMode ? '#4a151b' : '#fff0f3') : 'transparent', color: showOnlyLiked ? '#e63946' : theme.textMain, border: `1px solid ${theme.border}` }}
                         onClick={() => setShowOnlyLiked(!showOnlyLiked)}
                     >
                         <span style={{ fontSize: '1.2rem' }}>{showOnlyLiked ? '❤️' : '🤍'}</span>
                         <span style={{ fontWeight: 'bold' }}>My Wishlist</span>
                     </div>
 
-                    <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '15px 0' }} />
+                    <hr style={{ border: 'none', borderTop: `1px solid ${theme.border}`, margin: '15px 0' }} />
                     <h2 style={{ color: '#007bff', marginBottom: '20px' }}>Categories</h2>
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                         {CATEGORIES.map(category => (
@@ -120,8 +148,9 @@ const Marketplace = () => {
                                 key={category}
                                 style={{
                                     ...categoryItemStyle,
+                                    borderBottom: `1px solid ${theme.border}`,
                                     fontWeight: selectedCategory === category ? 'bold' : 'normal',
-                                    color: selectedCategory === category ? '#007bff' : '#333'
+                                    color: selectedCategory === category ? '#007bff' : theme.textMain
                                 }}
                                 onClick={() => setSelectedCategory(category)}
                             >
@@ -131,7 +160,7 @@ const Marketplace = () => {
                     </ul>
                 </aside>
 
-                {/* Query area and code */}
+                {/* main marketplace code*/}
                 <main style={mainContentStyle}>
                     <div style={searchContainerStyle}>
                         <input
@@ -142,27 +171,27 @@ const Marketplace = () => {
                                 setSearchQuery(e.target.value);
                                 setNotifyToggled(false);
                             }}
-                            style={searchInputStyle}
+                            style={{ ...searchInputStyle, backgroundColor: theme.inputBg, color: theme.textMain, border: `1px solid ${theme.border}` }}
                         />
                     </div>
 
                     <div style={headerStyle}>
-                        <h1 style={{ margin: 0, color: '#333' }}>Campus Listings</h1>
+                        <h1 style={{ margin: 0, color: theme.textMain }}>Campus Listings</h1>
                         <button onClick={() => setIsModalOpen(true)} style={createButtonStyle}>
                             + Create Listing
                         </button>
                     </div>
 
-                    {/* no listings adjust query*/}
+                    {/* No item listed and notify me code for when you want items to be notified when available*/}
                     {filteredListings.length === 0 ? (
-                        <div style={emptyStateStyle}>
+                        <div style={{ ...emptyStateStyle, backgroundColor: theme.bgSurface }}>
                             <div style={emptyIconStyle}>🔍</div>
-                            <h2 style={emptyTitleStyle}>Nothing found for "{searchQuery}"</h2>
-                            <p style={emptyDescStyle}>Sorry, we could not find anything that matches your query. Please check your spelling or expand your search.</p>
-                            <div style={notifyBoxStyle}>
+                            <h2 style={{ ...emptyTitleStyle, color: theme.textMain }}>Nothing found for "{searchQuery}"</h2>
+                            <p style={{ ...emptyDescStyle, color: theme.textSub }}>Sorry, we could not find anything that matches your query. Please check your spelling or expand your search.</p>
+                            <div style={{ ...notifyBoxStyle, backgroundColor: isDarkMode ? '#1a2b3c' : '#f8fbff', border: isDarkMode ? '1px dashed #2c4c6b' : '1px dashed #c2dbe9' }}>
                                 <p style={notifyTextStyle}>Would you like to be notified when something similar becomes available?</p>
                                 <button
-                                    style={notifyToggled ? notifyButtonActiveStyle : notifyButtonStyle}
+                                    style={notifyToggled ? notifyButtonActiveStyle : { ...notifyButtonStyle, backgroundColor: theme.bgSurface }}
                                     onClick={() => setNotifyToggled(!notifyToggled)}
                                 >
                                     {notifyToggled ? "✓ You will be notified" : "🔔 Notify Me"}
@@ -172,68 +201,50 @@ const Marketplace = () => {
                     ) : (
                         <div style={gridStyle}>
                             {filteredListings.map(item => (
+                                <div key={item.id} style={{ ...cardStyle, backgroundColor: theme.bgSurface, position: 'relative', opacity: item.status === 'sold' ? 0.6 : 1 }} onClick={() => navigate(`/listing/${item.id}`, { state: item })}>
 
-                                <div key={item.id} style={{ ...cardStyle, position: 'relative', opacity: item.status === 'sold' ? 0.6 : 1 }} onClick={() => navigate(`/listing/${item.id}`, { state: item })}>
-                                {item.isNew && <div style={newBadgeStyle}>✨ Just Listed</div>}
-                                    {/* Heart to signify like/wishlist */}
+                                    {item.isNew && <div style={newBadgeStyle}>✨ Just Listed</div>}
+
+                                    {/* like / wishlist heart */}
                                     <div style={heartIconStyle} onClick={(e) => toggleLike(e, item.id)}>
                                         {likedItems.includes(item.id) ? '❤️' : '🤍'}
                                     </div>
 
-                                    {/* pending sold status */}
+                                    {/* item pending or sold */}
                                     {item.status === 'pending' && <div style={pendingBadgeStyle}>Pending Meetup</div>}
                                     {item.status === 'sold' && <div style={soldOverlayStyle}>SOLD</div>}
 
-                                    {/* Image Wrapper */}
+                                    {/* item stats */}
                                     <div style={{ position: 'relative' }}>
                                         <img src={item.image} alt={item.title} style={imageStyle} />
-
-                                        {/* Eye and Message Bubble*/}
                                         <div style={statsOverlayStyle}>
-                                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                👁️ {item.views}
-                                            </span>
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>👁️ {item.views}</span>
                                             {item.chats > 0 && (
-                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ffeb3b' }}>
-                                                    💬 {item.chats} active
-                                                </span>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ffeb3b' }}>💬 {item.chats} active</span>
                                             )}
                                         </div>
                                     </div>
 
-                                    {/* Card Info */}
+                                    {/* item prices + features*/}
                                     <div style={cardInfoStyle}>
                                         <h3 style={priceStyle}>
                                             ${item.price.toFixed(2)}
-
-                                            {/* Show crossed-out old price if it exists */}
-                                            {item.originalPrice && (
-                                                <span style={oldPriceStyle}>${item.originalPrice.toFixed(2)}</span>
-                                            )}
-
-                                            {/* Show Price Drop Tag */}
-                                            {item.originalPrice && item.price < item.originalPrice && (
-                                                <span style={priceDropStyle}>↓ Drop</span>
-                                            )}
-
-                                            {/* Show Price Increase Tag */}
-                                            {item.originalPrice && item.price > item.originalPrice && (
-                                                <span style={priceIncreaseStyle}>↑ Up</span>
-                                            )}
+                                            {item.originalPrice && <span style={{ ...oldPriceStyle, color: theme.textSub }}>${item.originalPrice.toFixed(2)}</span>}
+                                            {item.originalPrice && item.price < item.originalPrice && <span style={priceDropStyle}>↓ Drop</span>}
+                                            {item.originalPrice && item.price > item.originalPrice && <span style={priceIncreaseStyle}>↑ Up</span>}
                                         </h3>
 
-                                        <p style={titleStyle}>{item.title}</p>
+                                        <p style={{ ...titleStyle, color: theme.textMain }}>{item.title}</p>
 
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px' }}>
-                                            <span style={badgeStyle}>{item.category}</span>
+                                            <span style={{ ...badgeStyle, backgroundColor: isDarkMode ? '#3a3b3c' : '#e9ecef', color: isDarkMode ? '#e4e6eb' : '#495057' }}>{item.category}</span>
 
-                                            {/* Only show message button if the item isn't sold */}
                                             {item.status !== 'sold' && (
                                                 <button
-                                                    style={cardMessageButtonStyle}
+                                                    style={{ ...cardMessageButtonStyle, backgroundColor: isDarkMode ? '#1a2b3c' : '#eef2f6' }}
                                                     onClick={(e) => {
                                                         e.preventDefault();
-                                                        e.stopPropagation(); // Prevents the card click from firing
+                                                        e.stopPropagation();
                                                         setMessageModal({ isOpen: true, item: item, text: '' });
                                                     }}
                                                 >
@@ -241,7 +252,6 @@ const Marketplace = () => {
                                                 </button>
                                             )}
                                         </div>
-
                                     </div>
                                 </div>
                             ))}
@@ -250,65 +260,58 @@ const Marketplace = () => {
                 </main>
             </div>
 
-            {/* modal action */}
+            {/* creating a new listing code*/}
             {isModalOpen && (
                 <div style={modalOverlayStyle}>
-                    <div style={modalContentStyle}>
+                    <div style={{ ...modalContentStyle, backgroundColor: theme.bgSurface, color: theme.textMain }}>
                         <h2 style={{marginTop: 0}}>Post a New Item</h2>
 
                         <div style={formGroupStyle}>
-                            <label>Title</label>
-                            <input value={newListing.title} onChange={e => setNewListing({...newListing, title: e.target.value})} style={modalInputStyle} placeholder="e.g. Graphic Calculator" />
+                            <label style={{color: theme.textMain}}>Title</label>
+                            <input value={newListing.title} onChange={e => setNewListing({...newListing, title: e.target.value})} style={{ ...modalInputStyle, backgroundColor: theme.inputBg, color: theme.textMain, border: `1px solid ${theme.border}` }} placeholder="e.g. Graphic Calculator" />
                         </div>
 
                         <div style={formGroupStyle}>
-                            <label>Price ($)</label>
-                            <input type="number" value={newListing.price} onChange={e => setNewListing({...newListing, price: e.target.value})} style={modalInputStyle} placeholder="0.00" />
+                            <label style={{color: theme.textMain}}>Price ($)</label>
+                            <input type="number" value={newListing.price} onChange={e => setNewListing({...newListing, price: e.target.value})} style={{ ...modalInputStyle, backgroundColor: theme.inputBg, color: theme.textMain, border: `1px solid ${theme.border}` }} placeholder="0.00" />
                         </div>
 
                         <div style={formGroupStyle}>
-                            <label>Description</label>
-                            <textarea value={newListing.description} onChange={e => setNewListing({...newListing, description: e.target.value})} style={{ ...modalInputStyle, height: '60px', resize: 'vertical', fontFamily: 'sans-serif' }} placeholder="Describe the condition..." />
+                            <label style={{color: theme.textMain}}>Description</label>
+                            <textarea value={newListing.description} onChange={e => setNewListing({...newListing, description: e.target.value})} style={{ ...modalInputStyle, backgroundColor: theme.inputBg, color: theme.textMain, border: `1px solid ${theme.border}`, height: '60px', resize: 'vertical', fontFamily: 'sans-serif' }} placeholder="Describe the condition..." />
                         </div>
 
                         <div style={formGroupStyle}>
-                            <label>Item Photos</label>
-                            <div style={mockUploadAreaStyle} onClick={() => alert("Upload feature coming in V2!")}>
-                                <span style={{ fontSize: '2rem', color: '#007bff' }}>+</span>
-                                <p style={{ margin: '5px 0 0 0', fontWeight: 'bold', color: '#555' }}>Click to upload or drag and drop</p>
-                                <p style={{ margin: 0, fontSize: '0.8rem', color: '#888' }}>SVG, PNG, JPG (max. 5MB)</p>
-                            </div>
-                        </div>
-
-                        <div style={formGroupStyle}>
-                            <label>Category</label>
-                            <select value={newListing.category} onChange={e => setNewListing({...newListing, category: e.target.value})} style={modalInputStyle}>
+                            <label style={{color: theme.textMain}}>Category</label>
+                            <select value={newListing.category} onChange={e => setNewListing({...newListing, category: e.target.value})} style={{ ...modalInputStyle, backgroundColor: theme.inputBg, color: theme.textMain, border: `1px solid ${theme.border}` }}>
                                 {CATEGORIES.filter(c => c !== "All").map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                         </div>
 
                         <div style={modalActionStyle}>
-                            <button onClick={() => setIsModalOpen(false)} style={cancelButtonStyle}>Cancel</button>
+                            <button onClick={() => setIsModalOpen(false)} style={{ ...cancelButtonStyle, backgroundColor: theme.hoverLight, color: theme.textMain, border: `1px solid ${theme.border}` }}>Cancel</button>
                             <button onClick={handlePostListing} style={postButtonStyle}>Post Listing</button>
                         </div>
                     </div>
                 </div>
             )}
+
+            {/* quick reply and messaging */}
             {messageModal.isOpen && messageModal.item && (
                 <div style={modalOverlayStyle}>
-                    <div style={modalContentStyle}>
+                    <div style={{ ...modalContentStyle, backgroundColor: theme.bgSurface, color: theme.textMain }}>
                         <h2 style={{marginTop: 0, marginBottom: '5px'}}>Message Seller</h2>
-                        <p style={{ margin: '0 0 20px 0', color: '#666', fontSize: '0.9rem' }}>
-                            Regarding: <strong>{messageModal.item.title}</strong>
+                        <p style={{ margin: '0 0 20px 0', color: theme.textSub, fontSize: '0.9rem' }}>
+                            Regarding: <strong style={{color: theme.textMain}}>{messageModal.item.title}</strong>
                         </p>
 
-                        <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#444' }}>Quick Replies</label>
+                        <label style={{ fontWeight: 'bold', fontSize: '0.9rem', color: theme.textMain }}>Quick Replies</label>
                         <div style={quickReplyContainerStyle}>
                             {QUICK_REPLIES.map(reply => (
                                 <button
                                     key={reply}
                                     onClick={() => setMessageModal({ ...messageModal, text: reply })}
-                                    style={chipStyle}
+                                    style={{ ...chipStyle, backgroundColor: theme.hoverLight, color: theme.textMain, border: `1px solid ${theme.border}` }}
                                 >
                                     {reply}
                                 </button>
@@ -319,7 +322,7 @@ const Marketplace = () => {
                             <textarea
                                 value={messageModal.text}
                                 onChange={e => setMessageModal({ ...messageModal, text: e.target.value })}
-                                style={{ ...modalInputStyle, height: '100px', resize: 'none', fontFamily: 'sans-serif' }}
+                                style={{ ...modalInputStyle, backgroundColor: theme.inputBg, color: theme.textMain, border: `1px solid ${theme.border}`, height: '100px', resize: 'none', fontFamily: 'sans-serif' }}
                                 placeholder="Type your message here..."
                             />
                         </div>
@@ -327,7 +330,7 @@ const Marketplace = () => {
                         <div style={modalActionStyle}>
                             <button
                                 onClick={() => setMessageModal({ isOpen: false, item: null, text: '' })}
-                                style={cancelButtonStyle}
+                                style={{ ...cancelButtonStyle, backgroundColor: theme.hoverLight, color: theme.textMain, border: `1px solid ${theme.border}` }}
                             >
                                 Cancel
                             </button>
@@ -349,73 +352,73 @@ const Marketplace = () => {
     );
 };
 
-// Below will just be all the styles for the frontend
-const pageLayout: React.CSSProperties = { display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f0f2f5', fontFamily: 'sans-serif' };
+// below will be styles on the whole marketplace
+const pageLayout: React.CSSProperties = { display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'sans-serif' };
 
-//
-const topBarStyle: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', padding: '15px 30px', borderBottom: '1px solid #ddd', position: 'sticky', top: 0, zIndex: 100 };
+// navigation + profile style
+const topBarStyle: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 30px', position: 'sticky', top: 0, zIndex: 100 };
 const navLogoStyle: React.CSSProperties = { color: '#007bff', fontSize: '1.8rem', margin: 0, fontWeight: '900', letterSpacing: '-0.5px' };
+const themeToggleStyle: React.CSSProperties = { background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', padding: '5px', borderRadius: '50%', outline: 'none' };
 const profileContainerStyle: React.CSSProperties = { position: 'relative' };
 const profileCircleStyle: React.CSSProperties = { width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#007bff', color: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', cursor: 'pointer', userSelect: 'none' };
-const dropdownStyle: React.CSSProperties = { position: 'absolute', top: '50px', right: 0, backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: '150px', overflow: 'hidden', border: '1px solid #ddd' };
+const dropdownStyle: React.CSSProperties = { position: 'absolute', top: '50px', right: 0, borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', width: '150px', overflow: 'hidden' };
 const dropdownListStyle: React.CSSProperties = { listStyle: 'none', margin: 0, padding: '5px 0' };
 const dropdownItemStyle: React.CSSProperties = { padding: '10px 15px', fontSize: '0.9rem', cursor: 'pointer' };
 
-// how the categories look and main things look
+// category side style
 const contentWrapperStyle: React.CSSProperties = { display: 'flex', flexGrow: 1, width: '100%' };
-const sidebarStyle: React.CSSProperties = { width: '250px', minWidth: '250px', backgroundColor: 'white', padding: '20px', borderRight: '1px solid #ddd' };
-const categoryItemStyle: React.CSSProperties = { padding: '10px 0', cursor: 'pointer', borderBottom: '1px solid #eee' };
+const sidebarStyle: React.CSSProperties = { width: '250px', minWidth: '250px', padding: '20px' };
+const categoryItemStyle: React.CSSProperties = { padding: '10px 0', cursor: 'pointer' };
 const mainContentStyle: React.CSSProperties = { flexGrow: 1, padding: '30px', boxSizing: 'border-box', width: '100%' };
 
-// marketplace style and how it looks
+// marketplace style
 const headerStyle: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' };
 const createButtonStyle: React.CSSProperties = { backgroundColor: '#28a745', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' };
 const gridStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px', width: '100%' };
-const cardStyle: React.CSSProperties = { backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'transform 0.2s' };
+const cardStyle: React.CSSProperties = { borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer', transition: 'transform 0.2s' };
 const imageStyle: React.CSSProperties = { width: '100%', height: '180px', objectFit: 'cover' };
 const cardInfoStyle: React.CSSProperties = { padding: '15px' };
 const priceStyle: React.CSSProperties = { margin: '0 0 5px 0', fontSize: '1.3rem', color: '#28a745', fontWeight: 'bold' };
-const titleStyle: React.CSSProperties = { margin: '0 0 10px 0', fontSize: '1rem', color: '#333' };
-const badgeStyle: React.CSSProperties = { fontSize: '0.8rem', backgroundColor: '#e9ecef', padding: '5px 10px', borderRadius: '12px', color: '#495057', fontWeight: 'bold' };
+const titleStyle: React.CSSProperties = { margin: '0 0 10px 0', fontSize: '1rem' };
+const badgeStyle: React.CSSProperties = { fontSize: '0.8rem', padding: '5px 10px', borderRadius: '12px', fontWeight: 'bold' };
 
-// search and empty when things are not there when search its style
+// the no items are available styles
 const searchContainerStyle: React.CSSProperties = { marginBottom: '20px' };
-const searchInputStyle: React.CSSProperties = { width: '100%', maxWidth: '600px', padding: '14px 20px', borderRadius: '20px', border: '1px solid #ccc', fontSize: '1rem', outline: 'none' };
-const emptyStateStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', textAlign: 'center', marginTop: '20px' };
+const searchInputStyle: React.CSSProperties = { width: '100%', maxWidth: '600px', padding: '14px 20px', borderRadius: '20px', fontSize: '1rem', outline: 'none' };
+const emptyStateStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 20px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', textAlign: 'center', marginTop: '20px' };
 const emptyIconStyle: React.CSSProperties = { fontSize: '4rem', marginBottom: '20px', opacity: 0.8 };
-const emptyTitleStyle: React.CSSProperties = { margin: '0 0 10px 0', fontSize: '1.8rem', color: '#333' };
-const emptyDescStyle: React.CSSProperties = { margin: '0 0 40px 0', color: '#666', fontSize: '1.1rem', maxWidth: '450px', lineHeight: '1.5' };
-const notifyBoxStyle: React.CSSProperties = { backgroundColor: '#f8fbff', padding: '25px', borderRadius: '12px', border: '1px dashed #c2dbe9', width: '100%', maxWidth: '350px' };
+const emptyTitleStyle: React.CSSProperties = { margin: '0 0 10px 0', fontSize: '1.8rem' };
+const emptyDescStyle: React.CSSProperties = { margin: '0 0 40px 0', fontSize: '1.1rem', maxWidth: '450px', lineHeight: '1.5' };
+const notifyBoxStyle: React.CSSProperties = { padding: '25px', borderRadius: '12px', width: '100%', maxWidth: '350px' };
 const notifyTextStyle: React.CSSProperties = { margin: '0 0 15px 0', fontWeight: 'bold', color: '#007bff', fontSize: '1.05rem' };
-const notifyButtonStyle: React.CSSProperties = { width: '100%', padding: '14px', backgroundColor: 'white', border: '2px solid #007bff', color: '#007bff', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' };
+const notifyButtonStyle: React.CSSProperties = { width: '100%', padding: '14px', border: '2px solid #007bff', color: '#007bff', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' };
 const notifyButtonActiveStyle: React.CSSProperties = { width: '100%', padding: '14px', backgroundColor: '#007bff', border: '2px solid #007bff', color: 'white', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem', cursor: 'pointer' };
 
-// Liked Styles when you like something
-const wishlistToggleStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 15px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', border: '1px solid #ddd' };
+// the liked and wishlist styles
+const wishlistToggleStyle: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 15px', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' };
 const heartIconStyle: React.CSSProperties = { position: 'absolute', top: '10px', right: '10px', backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', fontSize: '1.1rem', zIndex: 10, transition: 'transform 0.1s' };
-// more modal styles
+
+// other modals
 const modalOverlayStyle: React.CSSProperties = { position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 };
-const modalContentStyle: React.CSSProperties = { backgroundColor: 'white', padding: '30px', borderRadius: '12px', width: '100%', maxWidth: '450px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' };
+const modalContentStyle: React.CSSProperties = { padding: '30px', borderRadius: '12px', width: '100%', maxWidth: '450px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' };
 const formGroupStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '15px' };
-const modalInputStyle: React.CSSProperties = { padding: '12px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem' };
-const mockUploadAreaStyle: React.CSSProperties = { border: '2px dashed #c2dbe9', backgroundColor: '#f8fbff', borderRadius: '8px', padding: '20px', textAlign: 'center', cursor: 'pointer' };
+const modalInputStyle: React.CSSProperties = { padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none' };
 const modalActionStyle: React.CSSProperties = { display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '25px' };
-const cancelButtonStyle: React.CSSProperties = { padding: '10px 15px', backgroundColor: '#f8f9fa', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', color: '#555' };
+const cancelButtonStyle: React.CSSProperties = { padding: '10px 15px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' };
 const postButtonStyle: React.CSSProperties = { padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' };
 
-// The fear of missing out styles
+// the styles for making people want to buy quicker
 const pendingBadgeStyle: React.CSSProperties = { position: 'absolute', top: '15px', left: '-5px', backgroundColor: '#ffc107', color: '#000', padding: '5px 15px', fontWeight: 'bold', fontSize: '0.85rem', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', zIndex: 10, borderRadius: '0 4px 4px 0', textTransform: 'uppercase', letterSpacing: '0.5px' };
 const soldOverlayStyle: React.CSSProperties = { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(255,255,255,0.4)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '2.5rem', fontWeight: '900', color: '#dc3545', zIndex: 20, pointerEvents: 'none', textShadow: '2px 2px 0px white, -2px -2px 0px white, 2px -2px 0px white, -2px 2px 0px white' };
 const statsOverlayStyle: React.CSSProperties = { position: 'absolute', bottom: 0, left: 0, width: '100%', padding: '8px 10px', display: 'flex', justifyContent: 'space-between', boxSizing: 'border-box', background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', color: 'white', fontSize: '0.8rem', fontWeight: 'bold' };
-
-// Styles on price drop or increase
 const newBadgeStyle: React.CSSProperties = { position: 'absolute', top: '12px', right: '55px', backgroundColor: '#28a745', color: 'white', padding: '4px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)', zIndex: 10, letterSpacing: '0.5px' };
-const oldPriceStyle: React.CSSProperties = { fontSize: '0.9rem', color: '#999', textDecoration: 'line-through', marginLeft: '8px', fontWeight: 'normal' };
+const oldPriceStyle: React.CSSProperties = { fontSize: '0.9rem', textDecoration: 'line-through', marginLeft: '8px', fontWeight: 'normal' };
 const priceDropStyle: React.CSSProperties = { fontSize: '0.75rem', color: '#dc3545', backgroundColor: '#ffe5e5', padding: '3px 6px', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle', fontWeight: 'bold' };
 const priceIncreaseStyle: React.CSSProperties = { fontSize: '0.75rem', color: '#d97706', backgroundColor: '#fef3c7', padding: '3px 6px', borderRadius: '4px', marginLeft: '8px', verticalAlign: 'middle', fontWeight: 'bold' };
 
-// This is for the quick replies and quick messages
-const cardMessageButtonStyle: React.CSSProperties = { padding: '6px 12px', backgroundColor: '#eef2f6', color: '#007bff', border: 'none', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background-color 0.2s' };
+// quick reply styles
+const cardMessageButtonStyle: React.CSSProperties = { padding: '6px 12px', color: '#007bff', border: 'none', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 'bold', cursor: 'pointer', transition: 'background-color 0.2s' };
 const quickReplyContainerStyle: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '8px', margin: '10px 0 20px 0' };
-const chipStyle: React.CSSProperties = { padding: '8px 14px', backgroundColor: '#f0f2f5', border: '1px solid #dcdde1', borderRadius: '20px', fontSize: '0.85rem', color: '#333', cursor: 'pointer', transition: 'all 0.2s', outline: 'none' };
+const chipStyle: React.CSSProperties = { padding: '8px 14px', borderRadius: '20px', fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.2s', outline: 'none' };
+
 export default Marketplace;
