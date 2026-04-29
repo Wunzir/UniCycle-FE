@@ -50,3 +50,33 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+.marketplace-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0 24px;
+}
+
+.marketplace-stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.marketplace-stat-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+}
+
+.marketplace-stat-card p {
+  margin: 0;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .marketplace-stats {
+    grid-template-columns: 1fr;
+  }
+}
